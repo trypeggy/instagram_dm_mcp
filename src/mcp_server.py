@@ -15,10 +15,12 @@ mcp_server = FastMCP(
 
 
 @mcp_server.tool(
-  description="Send a message to a user on Instagram.",
+  description="Send a message to a user on Instagram, given their username and a message to send.",
 )
-def send_instagram_dm(user_id: str, message: str):
-   client.direct_send(user_id, message)
+def send_instagram_dm(username: str, message: str):
+   user_id = client.user_id_from_username(username)
+   client.direct_send(message, [user_id])
+   return "Message sent to user."
 
 
 if __name__ == "__main__":
