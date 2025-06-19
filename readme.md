@@ -2,13 +2,13 @@
 
 This is a Model Context Protocol (MCP) server for sending instagram DMs
 
-## SUBMIT YOUR ENTRY HERE
-https://tally.so/r/mR18zl
+## Hackathon Submission
+Submit -> https://tally.so/r/mR18zl
 
 ### Three cash prizes up for grabs
-- $5k - Breaking the internet (go viral AF)
-- $2.5k - Technical Sorcery (coolest technical implementation)
-- $2.5k - Holy Sh*t Award (make our jaws drop)
+1. $5k - Breaking the internet (go viral AF)
+2. $2.5k - Technical Sorcery (coolest technical implementation)
+3. $2.5k - Holy Sh*t Award (make our jaws drop)
 
 ## Installation
 
