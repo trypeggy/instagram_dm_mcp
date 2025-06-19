@@ -2,6 +2,9 @@
 
 This is a Model Context Protocol (MCP) server for sending instagram DMs
 
+## SUBMIT YOUR ENTRY HERE
+https://tally.so/r/mR18zl
+
 ## Installation
 
 ### Prerequisites
