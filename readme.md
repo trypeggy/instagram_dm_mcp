@@ -18,13 +18,13 @@ https://github.com/user-attachments/assets/dcc003e0-f74e-48aa-bf45-18ea62ba0091
 
 </div>
 
-> Note: submisions due by Friday 27 June 11:59PM PST
-
 ### Three cash prizes up for grabs
 
 1. $5k USD - Breaking the internet (go viral AF)
 2. $2.5k USD - Technical Sorcery (coolest technical implementation)
 3. $2.5k USD - Holy Sh*t Award (make our jaws drop)
+
+> Note: submisions due by Friday 27 June 11:59PM PST
 
 ## Installation
 
