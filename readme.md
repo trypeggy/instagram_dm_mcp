@@ -1,16 +1,26 @@
 # Instagram DM MCP server
 
-This is a Model Context Protocol (MCP) server for sending instagram DMs
+This is a Model Context Protocol (MCP) server for sending instagram Direct Messages.
+
+With this you can send Instagram Direct Messages from your account (more capabilities coming soon).
+
+Here's an example of what you can do when it's connected to Claude.
+
+https://github.com/user-attachments/assets/dcc003e0-f74e-48aa-bf45-18ea62ba0091
+
+> To get updates on this and other projects we work on [enter your email here](https://tally.so/r/np6rYy)
 
 ## Hackathon Submission
+
 Submit -> https://tally.so/r/mR18zl
 
-Submit by Friday 27 June 11:59PM PST
+> Note: submisions due by Friday 27 June 11:59PM PST
 
 ### Three cash prizes up for grabs
-1. $5k - Breaking the internet (go viral AF)
-2. $2.5k - Technical Sorcery (coolest technical implementation)
-3. $2.5k - Holy Sh*t Award (make our jaws drop)
+
+1. $5k USD - Breaking the internet (go viral AF)
+2. $2.5k USD - Technical Sorcery (coolest technical implementation)
+3. $2.5k USD - Holy Sh*t Award (make our jaws drop)
 
 ## Installation
 
@@ -72,12 +82,17 @@ Submit by Friday 27 June 11:59PM PST
    Open Claude Desktop and you should now see the Instagram DM MCP as an available integration.
 
    Or restart Cursor.
+---
+
+## Troubleshooting
+
+For additional Claude Desktop integration troubleshooting, see the [MCP documentation](https://modelcontextprotocol.io/quickstart/server#claude-for-desktop-integration-issues). The documentation includes helpful tips for checking logs and resolving common issues.
 
 ---
 
 ## Feedback
 
-Your feedback will be massively appreciated. Please [tell us](mailto:feedback@usegala.com) which features on that list you like to see next or request entirely new ones.
+Your feedback will be massively appreciated. Please [tell us](mailto:tanmay@usegala.com) which features on that list you like to see next or request entirely new ones.
 
 ---
 
