@@ -12,7 +12,11 @@ https://github.com/user-attachments/assets/dcc003e0-f74e-48aa-bf45-18ea62ba0091
 
 ## Hackathon Submission
 
-Submit -> https://tally.so/r/mR18zl
+<div align="left">
+
+[![Submit now](https://img.shields.io/badge/Submit%20now-black?style=for-the-badge&logo=tally&logoColor=white&labelColor=000000&color=000000&size=large)](https://tally.so/r/mR18zl)
+
+</div>
 
 > Note: submisions due by Friday 27 June 11:59PM PST
 
