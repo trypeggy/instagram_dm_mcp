@@ -6,7 +6,9 @@ With this you can send Instagram Direct Messages from your account (more capabil
 
 Here's an example of what you can do when it's connected to Claude.
 
-https://github.com/user-attachments/assets/dcc003e0-f74e-48aa-bf45-18ea62ba0091
+
+https://github.com/user-attachments/assets/9c945f25-4484-4223-8d6b-5bf31243464c
+
 
 > To get updates on this and other projects we work on [enter your email here](https://tally.so/r/np6rYy)
 ---
