@@ -46,6 +46,8 @@ def list_chats(
     amount: int = 20,
     selected_filter: str = "",
     thread_message_limit: Optional[int] = None,
+    full: bool = False,
+    fields: Optional[List[str]] = None,
 ) -> Dict[str, Any]:
     """Get Instagram Direct Message threads (chats) from the user's account, with optional filters and limits.
 
@@ -53,12 +55,42 @@ def list_chats(
         amount: Number of threads to fetch (default 20).
         selected_filter: Filter for threads ("", "flagged", or "unread").
         thread_message_limit: Limit for messages per thread.
+        full: If True, return the full thread object for each chat (default False).
+        fields: If provided, return only these fields for each thread.
     Returns:
         A dictionary with success status and the list of threads or error message.
     """
+    def thread_summary(thread):
+        t = thread if isinstance(thread, dict) else thread.dict()
+        users = t.get("users", [])
+        user_summaries = [
+            {
+                "username": u.get("username"),
+                "full_name": u.get("full_name"),
+                "pk": u.get("pk")
+            }
+            for u in users
+        ]
+        return {
+            "thread_id": t.get("id"),
+            "thread_title": t.get("thread_title"),
+            "users": user_summaries,
+            "last_activity_at": t.get("last_activity_at"),
+            "last_message": t.get("messages", [{}])[-1] if t.get("messages") else None
+        }
+
+    def filter_fields(thread, fields):
+        t = thread if isinstance(thread, dict) else thread.dict()
+        return {field: t.get(field) for field in fields}
+
     try:
         threads = client.direct_threads(amount, selected_filter, thread_message_limit)
-        return {"success": True, "threads": [t.dict() if hasattr(t, 'dict') else str(t) for t in threads]}
+        if full:
+            return {"success": True, "threads": [t.dict() if hasattr(t, 'dict') else str(t) for t in threads]}
+        elif fields:
+            return {"success": True, "threads": [filter_fields(t, fields) for t in threads]}
+        else:
+            return {"success": True, "threads": [thread_summary(t) for t in threads]}
     except Exception as e:
         return {"success": False, "message": str(e)}
 
