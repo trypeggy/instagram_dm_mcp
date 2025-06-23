@@ -1,7 +1,7 @@
 from fastmcp import FastMCP
 from instagrapi import Client
 import argparse
-from typing import Optional
+from typing import Optional, List, Dict, Any
 
 
 INSTRUCTIONS = """
@@ -16,33 +16,183 @@ mcp_server = FastMCP(
 )
 
 
-@mcp_server.tool(
-  description="Send a message to a user on Instagram, given their username and a message to send.",
-)
-def send_instagram_dm(username: str, message: str):
-   user_id = client.user_id_from_username(username)
-   client.direct_send(message, [user_id])
-   return "Message sent to user."
+@mcp_server.tool()
+def send_message(username: str, message: str) -> Dict[str, Any]:
+    """Send an Instagram direct message to a user by username.
+
+    Args:
+        username: Instagram username of the recipient.
+        message: The message text to send.
+    Returns:
+        A dictionary with success status and a status message.
+    """
+    if not username or not message:
+        return {"success": False, "message": "Username and message must be provided."}
+    try:
+        user_id = client.user_id_from_username(username)
+        if not user_id:
+            return {"success": False, "message": f"User '{username}' not found."}
+        dm = client.direct_send(message, [user_id])
+        if dm:
+            return {"success": True, "message": "Message sent to user.", "direct_message_id": getattr(dm, 'id', None)}
+        else:
+            return {"success": False, "message": "Failed to send message."}
+    except Exception as e:
+        return {"success": False, "message": str(e)}
 
 
-@mcp_server.tool(
-   description="Get a list of message threads from the user's Instagram account.",
-)
-def get_threads(
-   amount: int = 20,
-   selected_filter: str = "",
-   thread_message_limit: Optional[int] = None,
-):
-   threads = client.direct_threads(amount, selected_filter, thread_message_limit)
-   return threads
+@mcp_server.tool()
+def list_chats(
+    amount: int = 20,
+    selected_filter: str = "",
+    thread_message_limit: Optional[int] = None,
+) -> Dict[str, Any]:
+    """Get Instagram Direct Message threads (chats) from the user's account, with optional filters and limits.
+
+    Args:
+        amount: Number of threads to fetch (default 20).
+        selected_filter: Filter for threads ("", "flagged", or "unread").
+        thread_message_limit: Limit for messages per thread.
+    Returns:
+        A dictionary with success status and the list of threads or error message.
+    """
+    try:
+        threads = client.direct_threads(amount, selected_filter, thread_message_limit)
+        return {"success": True, "threads": [t.dict() if hasattr(t, 'dict') else str(t) for t in threads]}
+    except Exception as e:
+        return {"success": False, "message": str(e)}
 
 
-@mcp_server.tool(
-   description="Get a list of messages from a thread.",
-)
-def get_messages(thread_id: str, amount: int = 20):
-   messages = client.direct_messages(thread_id, amount)
-   return messages
+@mcp_server.tool()
+def list_messages(thread_id: str, amount: int = 20) -> Dict[str, Any]:
+    """Get messages from a specific Instagram Direct Message thread by thread ID, with an optional limit.
+
+    Args:
+        thread_id: The thread ID to fetch messages from.
+        amount: Number of messages to fetch (default 20).
+    Returns:
+        A dictionary with success status and the list of messages or error message.
+    """
+    if not thread_id:
+        return {"success": False, "message": "Thread ID must be provided."}
+    try:
+        messages = client.direct_messages(thread_id, amount)
+        return {"success": True, "messages": [m.dict() if hasattr(m, 'dict') else str(m) for m in messages]}
+    except Exception as e:
+        return {"success": False, "message": str(e)}
+
+
+@mcp_server.tool()
+def list_pending_chats(amount: int = 20) -> Dict[str, Any]:
+    """Get Instagram Direct Message threads (chats) from the user's pending inbox.
+
+    Args:
+        amount: Number of pending threads to fetch (default 20).
+    Returns:
+        A dictionary with success status and the list of pending threads or error message.
+    """
+    try:
+        threads = client.direct_pending_inbox(amount)
+        return {"success": True, "threads": [t.dict() if hasattr(t, 'dict') else str(t) for t in threads]}
+    except Exception as e:
+        return {"success": False, "message": str(e)}
+
+
+@mcp_server.tool()
+def search_threads(query: str) -> Dict[str, Any]:
+    """Search Instagram Direct Message threads by username or keyword.
+
+    Args:
+        query: The search term (username or keyword).
+    Returns:
+        A dictionary with success status and the search results or error message.
+    """
+    if not query:
+        return {"success": False, "message": "Query must be provided."}
+    try:
+        results = client.direct_search(query)
+        return {"success": True, "results": [r.dict() if hasattr(r, 'dict') else str(r) for r in results]}
+    except Exception as e:
+        return {"success": False, "message": str(e)}
+
+
+@mcp_server.tool()
+def get_thread_by_participants(user_ids: List[int]) -> Dict[str, Any]:
+    """Get an Instagram Direct Message thread by participant user IDs.
+
+    Args:
+        user_ids: List of user IDs (ints).
+    Returns:
+        A dictionary with success status and the thread or error message.
+    """
+    if not user_ids or not isinstance(user_ids, list):
+        return {"success": False, "message": "user_ids must be a non-empty list of user IDs."}
+    try:
+        thread = client.direct_thread_by_participants(user_ids)
+        return {"success": True, "thread": thread.dict() if hasattr(thread, 'dict') else str(thread)}
+    except Exception as e:
+        return {"success": False, "message": str(e)}
+
+
+@mcp_server.tool()
+def get_thread_details(thread_id: str, amount: int = 20) -> Dict[str, Any]:
+    """Get details and messages for a specific Instagram Direct Message thread by thread ID, with an optional message limit.
+
+    Args:
+        thread_id: The thread ID to fetch details for.
+        amount: Number of messages to fetch (default 20).
+    Returns:
+        A dictionary with success status and the thread details or error message.
+    """
+    if not thread_id:
+        return {"success": False, "message": "Thread ID must be provided."}
+    try:
+        thread = client.direct_thread(thread_id, amount)
+        return {"success": True, "thread": thread.dict() if hasattr(thread, 'dict') else str(thread)}
+    except Exception as e:
+        return {"success": False, "message": str(e)}
+
+
+@mcp_server.tool()
+def get_user_id_from_username(username: str) -> Dict[str, Any]:
+    """Get the Instagram user ID for a given username.
+
+    Args:
+        username: Instagram username.
+    Returns:
+        A dictionary with success status and the user ID or error message.
+    """
+    if not username:
+        return {"success": False, "message": "Username must be provided."}
+    try:
+        user_id = client.user_id_from_username(username)
+        if user_id:
+            return {"success": True, "user_id": user_id}
+        else:
+            return {"success": False, "message": f"User '{username}' not found."}
+    except Exception as e:
+        return {"success": False, "message": str(e)}
+
+
+@mcp_server.tool()
+def get_username_from_user_id(user_id: str) -> Dict[str, Any]:
+    """Get the Instagram username for a given user ID.
+
+    Args:
+        user_id: Instagram user ID.
+    Returns:
+        A dictionary with success status and the username or error message.
+    """
+    if not user_id:
+        return {"success": False, "message": "User ID must be provided."}
+    try:
+        username = client.username_from_user_id(user_id)
+        if username:
+            return {"success": True, "username": username}
+        else:
+            return {"success": False, "message": f"User ID '{user_id}' not found."}
+    except Exception as e:
+        return {"success": False, "message": str(e)}
 
 
 if __name__ == "__main__":

@@ -9,6 +9,7 @@ Here's an example of what you can do when it's connected to Claude.
 https://github.com/user-attachments/assets/dcc003e0-f74e-48aa-bf45-18ea62ba0091
 
 > To get updates on this and other projects we work on [enter your email here](https://tally.so/r/np6rYy)
+---
 
 ## Hackathon Submission
 
@@ -25,6 +26,7 @@ https://github.com/user-attachments/assets/dcc003e0-f74e-48aa-bf45-18ea62ba0091
 3. $2.5k USD - Holy Sh*t Award (make our jaws drop)
 
 > Note: submisions due by Friday 27 June 11:59PM PST
+---
 
 ## Installation
 
@@ -44,9 +46,15 @@ https://github.com/user-attachments/assets/dcc003e0-f74e-48aa-bf45-18ea62ba0091
    cd instagram_dm_mcp
    ```
 
-2. **Connect to the MCP server**
+2. **Install dependencies**
 
-   Copy the below json with the appropriate `{{PATH}}` values and `{{API KEY}}`:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Connect to the MCP server**
+
+   Copy the below json with the appropriate `{{PATH}}` values, `{{YOUR_INSTAGRAM_USERNAME}}` and `{{YOUR_INSTAGRAM_PASSWORD}}`:
 
    ```json
    {
@@ -86,6 +94,24 @@ https://github.com/user-attachments/assets/dcc003e0-f74e-48aa-bf45-18ea62ba0091
    Open Claude Desktop and you should now see the Instagram DM MCP as an available integration.
 
    Or restart Cursor.
+---
+
+## Usage
+
+Below is a list of all available tools and what they do:
+
+| Tool Name                   | Description                                                                                   |
+|-----------------------------|-----------------------------------------------------------------------------------------------|
+| `send_message`              | Send an Instagram direct message to a user by username.                                       |
+| `list_chats`                | Get Instagram Direct Message threads (chats) from your account, with optional filters/limits.  |
+| `list_messages`             | Get messages from a specific Instagram Direct Message thread by thread ID.                     |
+| `list_pending_chats`        | Get Instagram Direct Message threads from your pending inbox.                                  |
+| `search_threads`            | Search Instagram Direct Message threads by username or keyword.                                |
+| `get_thread_by_participants`| Get an Instagram Direct Message thread by participant user IDs.                                |
+| `get_thread_details`        | Get details and messages for a specific Instagram Direct Message thread by thread ID.          |
+| `get_user_id_from_username` | Get the Instagram user ID for a given username.                                                |
+| `get_username_from_user_id` | Get the Instagram username for a given user ID.                                                |
+
 ---
 
 ## Troubleshooting
