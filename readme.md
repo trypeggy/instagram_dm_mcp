@@ -11,6 +11,9 @@ https://github.com/user-attachments/assets/9c945f25-4484-4223-8d6b-5bf31243464c
 
 
 > To get updates on this and other projects we work on [enter your email here](https://tally.so/r/np6rYy)
+
+PS: Join our [Twitter community](https://twitter.com/i/communities/1937504082635170114) for all things MCP 
+
 ---
 
 ## Hackathon Submission
