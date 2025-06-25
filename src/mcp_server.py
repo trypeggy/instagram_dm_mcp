@@ -2,7 +2,16 @@ from fastmcp import FastMCP
 from instagrapi import Client
 import argparse
 from typing import Optional, List, Dict, Any
+import os
+from dotenv import load_dotenv
+import logging
 
+# Load environment variables from .env file
+load_dotenv()
+
+# Set up logger
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 INSTRUCTIONS = """
 This server is used to send messages to a user on Instagram.
@@ -229,9 +238,28 @@ def get_username_from_user_id(user_id: str) -> Dict[str, Any]:
 
 if __name__ == "__main__":
    parser = argparse.ArgumentParser()
-   parser.add_argument("--username", type=str, required=True)
-   parser.add_argument("--password", type=str, required=True)
+   parser.add_argument("--username", type=str, help="Instagram username (can also be set via INSTAGRAM_USERNAME env var)")
+   parser.add_argument("--password", type=str, help="Instagram password (can also be set via INSTAGRAM_PASSWORD env var)")
    args = parser.parse_args()
 
-   client.login(args.username, args.password)
-   mcp_server.run(transport="stdio")
+   # Get credentials from environment variables or command line arguments
+   username = args.username or os.getenv("INSTAGRAM_USERNAME")
+   password = args.password or os.getenv("INSTAGRAM_PASSWORD")
+
+   if not username or not password:
+       logger.error("Instagram credentials not provided. Please set INSTAGRAM_USERNAME and INSTAGRAM_PASSWORD environment variables in a .env file, or provide --username and --password arguments.")
+       print("Error: Instagram credentials not provided.")
+       print("Please either:")
+       print("1. Create a .env file with INSTAGRAM_USERNAME and INSTAGRAM_PASSWORD")
+       print("2. Use --username and --password command line arguments")
+       exit(1)
+
+   try:
+       logger.info("Attempting to login to Instagram...")
+       client.login(username, password)
+       logger.info("Successfully logged in to Instagram")
+       mcp_server.run(transport="stdio")
+   except Exception as e:
+       logger.error(f"Failed to login to Instagram: {str(e)}")
+       print(f"Error: Failed to login to Instagram - {str(e)}")
+       exit(1)
