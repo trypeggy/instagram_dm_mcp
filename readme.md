@@ -57,26 +57,42 @@ PS: Join our [Twitter community](https://twitter.com/i/communities/1937504082635
    pip install -r requirements.txt
    ```
 
-3. **Connect to the MCP server**
+3. **Configure Instagram credentials**
 
-   Copy the below json with the appropriate `{{PATH}}` values, `{{YOUR_INSTAGRAM_USERNAME}}` and `{{YOUR_INSTAGRAM_PASSWORD}}`:
+   You have two options for providing your Instagram credentials:
 
-   ```json
-   {
-     "mcpServers": {
-       "instagram_dms": {
-         "command": "python",
-         "args": [
-           "{{PATH_TO_SRC}}/instagram_dm_mcp/src/mcp_server.py",
-           "--username",
-           "{{YOUR_INSTAGRAM_USERNAME}}",
-          "--password",
-          "{{YOUR_INSTAGRAM_PASSWORD}}"
-         ]
-       }
-     }
-   }
+   **Option A: Environment Variables (Recommended)**
+   
+   **Quick Setup (Recommended):**
+   
+   Run the helper script:
+   
+   ```bash
+   python setup_env.py
    ```
+   
+   This will interactively prompt you for your credentials and create the `.env` file securely.
+   
+   **Manual Setup:**
+   
+   Create a `.env` file in the project root:
+   
+   ```bash
+   cp env.example .env
+   ```
+   
+   Then edit `.env` with your actual credentials:
+   
+   ```
+   INSTAGRAM_USERNAME=your_instagram_username
+   INSTAGRAM_PASSWORD=your_instagram_password
+   ```
+   
+   **Option B: Command Line Arguments**
+   
+   You can still pass credentials as command line arguments (less secure).
+
+4. **Connect to the MCP server**
 
    **For Claude Desktop:**
    
@@ -94,7 +110,41 @@ PS: Join our [Twitter community](https://twitter.com/i/communities/1937504082635
    ~/.cursor/mcp.json
    ```
 
-4. **Restart Claude Desktop / Cursor**
+   **Configuration with Environment Variables (Recommended):**
+   
+   ```json
+   {
+     "mcpServers": {
+       "instagram_dms": {
+         "command": "python",
+         "args": [
+           "{{PATH_TO_SRC}}/instagram_dm_mcp/src/mcp_server.py"
+         ]
+       }
+     }
+   }
+   ```
+
+   **Configuration with Command Line Arguments:**
+   
+   ```json
+   {
+     "mcpServers": {
+       "instagram_dms": {
+         "command": "python",
+         "args": [
+           "{{PATH_TO_SRC}}/instagram_dm_mcp/src/mcp_server.py",
+           "--username",
+           "{{YOUR_INSTAGRAM_USERNAME}}",
+          "--password",
+          "{{YOUR_INSTAGRAM_PASSWORD}}"
+         ]
+       }
+     }
+   }
+   ```
+
+5. **Restart Claude Desktop / Cursor**
    
    Open Claude Desktop and you should now see the Instagram DM MCP as an available integration.
 
