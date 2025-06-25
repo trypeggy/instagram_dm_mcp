@@ -18,6 +18,8 @@ PS: Join our [Twitter community](https://twitter.com/i/communities/1937504082635
 
 ## Hackathon Submission
 
+Build anything using this Instagram DM MCP (can be technical, no-code or low-code) and submit!
+
 <div align="left">
 
 [![Submit now](https://img.shields.io/badge/Submit%20now-black?style=for-the-badge&logo=tally&logoColor=white&labelColor=000000&color=000000&size=large)](https://tally.so/r/mR18zl)
