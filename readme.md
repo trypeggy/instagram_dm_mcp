@@ -20,11 +20,15 @@ PS: Join our [Twitter community](https://twitter.com/i/communities/1937504082635
 
 Build anything using this Instagram DM MCP (can be technical, no-code or low-code) and submit!
 
+No restrictions, open to anyone/anywhere to join.
+
 <div align="left">
 
 [![Submit now](https://img.shields.io/badge/Submit%20now-black?style=for-the-badge&logo=tally&logoColor=white&labelColor=000000&color=000000&size=large)](https://tally.so/r/mR18zl)
 
 </div>
+
+> Note: submisions due by Friday 27 June 11:59PM PST
 
 ### Three cash prizes up for grabs
 
@@ -32,7 +36,6 @@ Build anything using this Instagram DM MCP (can be technical, no-code or low-cod
 2. $2.5k USD - Technical Sorcery (coolest technical implementation)
 3. $2.5k USD - Holy Sh*t Award (make our jaws drop)
 
-> Note: submisions due by Friday 27 June 11:59PM PST
 ---
 
 ## Installation
