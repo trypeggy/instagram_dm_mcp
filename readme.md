@@ -58,9 +58,14 @@ No restrictions, open to anyone/anywhere to join.
 
 2. **Install dependencies**
 
-   ```bash
-   pip install -r requirements.txt
-   ```
+  - Using UVicorn (recommended):
+    ```bash
+    uv sync
+    ```
+  - Using Pip:
+    ```bash
+    pip install -r requirements.txt
+    ```
 
 3. **Configure Instagram credentials**
 
@@ -116,19 +121,38 @@ No restrictions, open to anyone/anywhere to join.
    ```
 
    **Configuration with Environment Variables (Recommended):**
+   - Using UVicorn
    
    ```json
    {
      "mcpServers": {
        "instagram_dms": {
-         "command": "python",
-         "args": [
-           "{{PATH_TO_SRC}}/instagram_dm_mcp/src/mcp_server.py"
-         ]
-       }
-     }
-   }
+           "command": "uv",
+           "args": [
+             "run",
+             "--directory",
+             "PATH/TO/instagram_dm_mcp",
+             "python",
+             "src/mcp_server.py"
+           ]
+        }
+      }
+    }
    ```
+
+   - Using Python
+    ```json
+    {
+      "mcpServers": {
+        "instagram_dms": {
+          "command": "python",
+          "args": [
+            "{{PATH_TO_SRC}}/instagram_dm_mcp/src/ mcp_server.py"
+          ]
+        }
+      }
+    }
+    ```
 
    **Configuration with Command Line Arguments:**
    
@@ -163,14 +187,24 @@ Below is a list of all available tools and what they do:
 | Tool Name                   | Description                                                                                   |
 |-----------------------------|-----------------------------------------------------------------------------------------------|
 | `send_message`              | Send an Instagram direct message to a user by username.                                       |
+| `send_photo_message`        | Send a photo as an Instagram direct message to a user by username.                            |
 | `list_chats`                | Get Instagram Direct Message threads (chats) from your account, with optional filters/limits.  |
 | `list_messages`             | Get messages from a specific Instagram Direct Message thread by thread ID.                     |
+| `mark_message_seen`         | Mark a specific message in an Instagram Direct Message thread as seen.                         |
 | `list_pending_chats`        | Get Instagram Direct Message threads from your pending inbox.                                  |
 | `search_threads`            | Search Instagram Direct Message threads by username or keyword.                                |
 | `get_thread_by_participants`| Get an Instagram Direct Message thread by participant user IDs.                                |
 | `get_thread_details`        | Get details and messages for a specific Instagram Direct Message thread by thread ID.          |
 | `get_user_id_from_username` | Get the Instagram user ID for a given username.                                                |
 | `get_username_from_user_id` | Get the Instagram username for a given user ID.                                                |
+| `get_user_info`             | Get information about a specific Instagram user by username.                        |
+| `search_users`              | Search for Instagram users by username                                              |
+| `get_user_stories`          | Get recent stories from a specific Instagram user by username.                                  |
+| `like_media`               | Like or unlike a specific media post by media ID.                                                       |
+| `get_user_followers`        | Get a list of followers for a specific Instagram user by username.                             |
+| `get_user_following`        | Get a list of users that a specific Instagram user is following by username.                   |
+| `get_user_posts`            | Get recent posts from a specific Instagram user by username.                                   |
+
 
 ---
 
