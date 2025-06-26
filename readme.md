@@ -188,8 +188,12 @@ Below is a list of all available tools and what they do:
 |-----------------------------|-----------------------------------------------------------------------------------------------|
 | `send_message`              | Send an Instagram direct message to a user by username.                                       |
 | `send_photo_message`        | Send a photo as an Instagram direct message to a user by username.                            |
+| `send_video_message`        | Send a video as an Instagram direct message to a user by username.                            |
 | `list_chats`                | Get Instagram Direct Message threads (chats) from your account, with optional filters/limits.  |
-| `list_messages`             | Get messages from a specific Instagram Direct Message thread by thread ID.                     |
+| `list_messages`             | Get messages from a specific Instagram Direct Message thread by thread ID. Now exposes `item_type` and shared post/reel info for each message. Use this to determine which download tool to use. |
+| `download_media_from_message` | Download a direct-uploaded photo or video from a DM message (not for shared posts/reels/clips). |
+| `download_shared_post_from_message` | Download media from a shared post, reel, or clip in a DM message (not for direct uploads). |
+| `list_media_messages`       | List all messages containing direct-uploaded media (photo/video) in a DM thread.              |
 | `mark_message_seen`         | Mark a specific message in an Instagram Direct Message thread as seen.                         |
 | `list_pending_chats`        | Get Instagram Direct Message threads from your pending inbox.                                  |
 | `search_threads`            | Search Instagram Direct Message threads by username or keyword.                                |
