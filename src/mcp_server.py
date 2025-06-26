@@ -83,6 +83,36 @@ def send_photo_message(username: str, photo_path: str) -> Dict[str, Any]:
 
 
 @mcp.tool()
+def send_video_message(username: str, video_path: str) -> Dict[str, Any]:
+    """Send a video via Instagram direct message to a user by username.
+
+    Args:
+        username: Instagram username of the recipient.
+        video_path: Path to the video file to send.
+    Returns:
+        A dictionary with success status and a status message.
+    """
+    if not username or not video_path:
+        return {"success": False, "message": "Username and video_path must be provided."}
+    
+    if not os.path.exists(video_path):
+        return {"success": False, "message": f"Video file not found: {video_path}"}
+    
+    try:
+        user_id = client.user_id_from_username(username)
+        if not user_id:
+            return {"success": False, "message": f"User '{username}' not found."}
+
+        result = client.direct_send_video(Path(video_path), [user_id])
+        if result:
+            return {"success": True, "message": "Video sent successfully.", "direct_message_id": getattr(result, 'id', None)}
+        else:
+            return {"success": False, "message": "Failed to send video."}
+    except Exception as e:
+        return {"success": False, "message": str(e)}
+
+
+@mcp.tool()
 def list_chats(
     amount: int = 20,
     selected_filter: str = "",
