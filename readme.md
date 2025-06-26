@@ -58,7 +58,7 @@ No restrictions, open to anyone/anywhere to join.
 
 2. **Install dependencies**
 
-  - Using UVicorn (recommended):
+  - Using uv (recommended):
     ```bash
     uv sync
     ```
@@ -121,7 +121,7 @@ No restrictions, open to anyone/anywhere to join.
    ```
 
    **Configuration with Environment Variables (Recommended):**
-   - Using UVicorn
+   - Using uv
    
    ```json
    {
