@@ -822,7 +822,22 @@ if __name__ == "__main__":
 
    try:
        logger.info("Attempting to login to Instagram...")
+       
+       # CRITICAL FIX: Session file handling for persistent authentication
+       # Without this, Instagram login hangs due to rate limiting and security measures
+       # Session files allow Instagram to recognize the client and avoid fresh authentication
+       # This prevents the MCP server from hanging after "🚀 Attempting to send DM"
+       SESSION_FILE = Path(f"{username}_session.json")
+       if SESSION_FILE.exists():
+           logger.info(f"Loading existing session from {SESSION_FILE}")
+           client.load_settings(SESSION_FILE)
+       
        client.login(username, password)
+       
+       # Save session for future use to avoid repeated fresh authentication
+       client.dump_settings(SESSION_FILE)
+       logger.info(f"Session saved to {SESSION_FILE}")
+       
        logger.info("Successfully logged in to Instagram")
        mcp.run(transport="stdio")
    except Exception as e:
