@@ -6,7 +6,8 @@ import os
 from dotenv import load_dotenv
 import logging
 from pathlib import Path
-
+from instagrapi import Client
+from instagrapi.exceptions import ClientError ,ClientLoginRequired
 # Load environment variables from .env file
 load_dotenv()
 
@@ -24,6 +25,135 @@ mcp = FastMCP(
    name="Instagram DMs",
    instructions=INSTRUCTIONS
 )
+
+USERNAME = os.getenv("INSTAGRAM_USERNAME")
+PASSWORD = os.getenv("INSTAGRAM_PASSWORD")
+
+
+sessionfile="session.json"
+def init_client() -> Client:
+    cl = Client()
+    if os.path.exists(sessionfile):
+        cl.load_settings(sessionfile)
+    cl.login(USERNAME, PASSWORD)
+    cl.dump_settings(sessionfile)
+    return cl
+
+@mcp.tool()
+def like_comment(comment_id: int) -> dict:
+    """
+    Like (or unlike) an Instagram comment by its ID.
+
+    Args:
+        comment_id: PK of the comment to like.
+
+    Returns:
+        dict: success, message, optionally error.
+    """
+    try:
+        cl = init_client()
+        cl.comment_like(int(comment_id))
+    except ClientLoginRequired as e:
+        return {"success": False, "message": "Login required", "error": str(e)}
+    except ClientError as e:
+        return {"success": False, "message": "Failed to like comment", "error": str(e)}
+
+    return {"success": True, "message": f"Liked comment {comment_id}"}
+
+@mcp.tool()
+def get_media_comments(media_id: str, amount: int = 5, cursor: str = None) -> dict:
+    """
+    Fetch comments for a given Instagram media via Instagrapi.
+
+    Args:
+        media_id: ID of the Instagram media (string).
+        amount: Number of comments to fetch per page (default: 5).
+        cursor: Cursor (min_id) for pagination (optional).
+
+    Returns:
+        dict: {
+            success: bool,
+            comments: list of comment dicts,
+            next_cursor: str or None,
+            message: str,
+            error: str (if any)
+        }
+    """
+    from instagrapi import Client
+    from instagrapi.exceptions import ClientError, ClientLoginRequired
+    import os
+
+    def init_client() -> Client:
+        cl = Client()
+        if os.path.exists("session.json"):
+            cl.load_settings("session.json")
+        # ensure both login and session loading can refresh or reuse session
+        cl.login(username=username, password=password)
+        cl.dump_settings("session.json")
+        return cl
+
+    try:
+        cl = init_client()
+        # Ensure media_id is str
+        media_id_str = str(media_id)
+        if cursor:
+            comments, next_cursor = cl.media_comments_chunk(media_id_str, amount, min_id=str(cursor))
+        else:
+            comments = cl.media_comments(media_id_str, amount=amount)
+            next_cursor = None
+    except ClientLoginRequired as e:
+        return {"success": False, "message": "Login required", "error": str(e)}
+    except ClientError as e:
+        return {"success": False, "message": "Failed to fetch comments", "error": str(e)}
+
+    return {
+        "success": True,
+        "comments": [c.dict() for c in comments],
+        "next_cursor": next_cursor,
+        "message": f"Fetched {len(comments)} comments"
+    }
+
+
+
+@mcp.tool()
+def reply_to_comment(media_id: str, comment_id: int, text: str,reply_username:str="") -> dict:
+    """
+    Reply to a specific Instagram comment using instagrapi.
+
+    Args:
+        media_id: ID of the Instagram media (string).
+        comment_id: PK of the comment you want to reply to (integer).
+        text: Reply message text.
+
+    Returns:
+        A dict with success status, message, reply comment data or error.
+    """
+    def init_client() -> Client:
+        cl = Client()
+        if os.path.exists("session.json"):
+            cl.load_settings("session.json")
+        # ensure both login and session loading can refresh or reuse session
+        cl.login(username=username, password=password)
+        cl.dump_settings("session.json")
+        return cl
+    try:
+        cl = init_client()
+        reply = cl.media_comment(
+            str(media_id),
+            text=text+f"@{reply_username}",
+            replied_to_comment_id=int(comment_id)
+        )
+    except ClientLoginRequired as e:
+        return {"success": False, "message": "Login required", "error": str(e)}
+    except ClientError as e:
+        return {"success": False, "message": "Failed to post reply", "error": str(e)}
+
+    return {
+        "success": True,
+        "message": f"Replied to comment {comment_id}",
+        "reply": reply.dict()
+    }
+
 
 
 @mcp.tool()
