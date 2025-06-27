@@ -214,6 +214,8 @@ Below is a list of all available tools and what they do:
 
 ## Troubleshooting
 
+**Instagram Login Hanging:** The server now includes automatic session management to prevent login hangs. Session files (e.g., `username_session.json`) are automatically created and reused to maintain authentication state between runs.
+
 For additional Claude Desktop integration troubleshooting, see the [MCP documentation](https://modelcontextprotocol.io/quickstart/server#claude-for-desktop-integration-issues). The documentation includes helpful tips for checking logs and resolving common issues.
 
 ---
