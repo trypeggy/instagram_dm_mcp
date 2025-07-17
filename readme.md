@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/trypeggy-instagram-dm-mcp-badge.png)](https://mseep.ai/app/trypeggy-instagram-dm-mcp)
+
 # Instagram DM MCP server
 
 This is a Model Context Protocol (MCP) server for sending instagram Direct Messages.
