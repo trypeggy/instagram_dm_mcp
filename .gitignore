@@ -6,3 +6,10 @@ pyvenv.cfg
 *.db
 .env
 .venv
+
+# Session state and per-account artifacts. These contain Instagram session
+# cookies / credentials and must never be committed; leaking them lets anyone
+# hijack the account.
+*_session.json
+current_user.txt
+.instagram-mcp-rate-limits.json
