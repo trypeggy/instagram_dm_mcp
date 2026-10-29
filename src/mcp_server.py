@@ -5,7 +5,9 @@ from typing import Optional, List, Dict, Any
 import os
 from dotenv import load_dotenv
 import logging
+from datetime import datetime
 from pathlib import Path
+from urllib.parse import parse_qs, urlparse
 
 # Load environment variables from .env file
 load_dotenv()
@@ -166,6 +168,86 @@ def list_chats(
         return {"success": False, "message": str(e)}
 
 
+def _shared_post_info(m) -> Optional[Dict[str, Any]]:
+    """Extract the shared post/reel/clip from a DM message, if it has one.
+
+    instagrapi parses `clip` and `media_share` into Media models and `xma_media_share`
+    into a MediaXma model on `xma_share`, so these are attributes, not dicts.
+    """
+    for attr in ["clip", "media_share"]:
+        media = getattr(m, attr, None)
+        if media:
+            return {
+                "code": media.code,
+                "url": f"https://www.instagram.com/p/{media.code}/",
+                "caption": media.caption_text,
+                "author": media.user.username if media.user else None,
+                "video_duration": media.video_duration,
+            }
+    xma = getattr(m, "xma_share", None)
+    if xma and xma.video_url:
+        target = urlparse(str(xma.video_url))
+        media_id = parse_qs(target.query).get("id", [""])[0].split("_")[0]
+        if target.scheme == "instagram" and media_id.isdigit():
+            # Deep link like instagram://media?id=<pk>_<owner>; the shortcode is derived from the pk
+            code = client.media_code_from_pk(int(media_id))
+        else:
+            parts = [p for p in target.path.split("/") if p]
+            code = parts[-1] if parts else None
+        if not code:
+            return None
+        return {
+            "code": code,
+            "url": f"https://www.instagram.com/p/{code}/",
+            "caption": None,  # not included in xma shares; download_shared_post_from_message returns it
+            "author": xma.header_title_text or xma.title or None,
+            "video_duration": None,
+        }
+    return None
+
+
+@mcp.tool()
+def list_messages_compact(thread_id: str, amount: int = 50, since_timestamp: Optional[str] = None) -> Dict[str, Any]:
+    """Get a compact view of messages in a DM thread: who sent what, and any shared reel/post.
+
+    Much smaller than list_messages; use this to scan a thread for shared reels.
+
+    Args:
+        thread_id: The thread ID to fetch messages from.
+        amount: Number of most recent messages to fetch (default 50).
+        since_timestamp: Optional ISO timestamp; only messages strictly newer than this are returned.
+    Returns:
+        A dictionary with success status and the messages, oldest first.
+    """
+    if not thread_id:
+        return {"success": False, "message": "Thread ID must be provided."}
+    try:
+        since = datetime.fromisoformat(since_timestamp) if since_timestamp else None
+        if since and since.tzinfo:
+            # instagrapi message timestamps are naive local time
+            since = since.astimezone().replace(tzinfo=None)
+        thread = client.direct_thread(thread_id, amount)
+        usernames = {str(u.pk): u.username for u in thread.users}
+        result_msgs = []
+        for m in thread.messages:
+            if since and m.timestamp <= since:
+                continue
+            result_msgs.append({
+                "message_id": m.id,
+                "timestamp": m.timestamp.isoformat(),
+                "sender": "me" if m.is_sent_by_viewer or str(m.user_id) == str(client.user_id)
+                          else usernames.get(str(m.user_id), m.user_id),
+                "item_type": m.item_type,
+                "text": m.text,
+                "link": m.link.link_context.link_url if m.link else None,
+                "shared_post": _shared_post_info(m),
+            })
+        result_msgs.sort(key=lambda msg: msg["timestamp"])
+        return {"success": True, "thread_title": thread.thread_title, "messages": result_msgs}
+    except Exception as e:
+        return {"success": False, "message": str(e)}
+
+
 @mcp.tool()
 def list_messages(thread_id: str, amount: int = 20) -> Dict[str, Any]:
     """Get messages from a specific Instagram Direct Message thread by thread ID, with an optional limit.
@@ -185,26 +267,11 @@ def list_messages(thread_id: str, amount: int = 20) -> Dict[str, Any]:
             msg = m.dict() if hasattr(m, 'dict') else (m if isinstance(m, dict) else {})
             # Expose item_type and shared post/reel info if present
             item_type = getattr(m, 'item_type', None) or msg.get('item_type')
-            shared_info = None
-            shared_url = None
-            shared_code = None
-            if item_type in ["clip", "media_share", "reel_share", "xma_media_share", "post_share"]:
-                # Try to extract code/url from known attributes
-                clip = getattr(m, 'clip', None) or msg.get('clip')
-                media_share = getattr(m, 'media_share', None) or msg.get('media_share')
-                xma = getattr(m, 'xma_media_share', None) or msg.get('xma_media_share')
-                post_share = getattr(m, 'post_share', None) or msg.get('post_share')
-                # Try to get code/url from any of these
-                for obj in [clip, media_share, xma, post_share]:
-                    if obj:
-                        shared_code = obj.get('code') or obj.get('pk')
-                        shared_url = obj.get('url') or (f"https://www.instagram.com/reel/{shared_code}/" if shared_code else None)
-                        shared_info = obj
-                        break
+            shared_info = _shared_post_info(m)
             msg['item_type'] = item_type
             msg['shared_post_info'] = shared_info
-            msg['shared_post_url'] = shared_url
-            msg['shared_post_code'] = shared_code
+            msg['shared_post_url'] = shared_info["url"] if shared_info else None
+            msg['shared_post_code'] = shared_info["code"] if shared_info else None
             result_msgs.append(msg)
         return {"success": True, "messages": result_msgs}
     except Exception as e:
@@ -759,19 +826,8 @@ def download_shared_post_from_message(message_id: str, thread_id: str, download_
         target_message = _find_message_in_thread(thread_id, message_id)
         if not target_message:
             return {"success": False, "message": f"Message {message_id} not found in thread {thread_id}"}
-        item_type = getattr(target_message, 'item_type', None)
-        # Extract shared post/reel/clip URL
-        shared_url = None
-        shared_code = None
-        shared_obj = None
-        if item_type in ["clip", "media_share", "reel_share", "xma_media_share", "post_share"]:
-            for attr in ['clip', 'media_share', 'xma_media_share', 'post_share']:
-                obj = getattr(target_message, attr, None)
-                if obj:
-                    shared_code = obj.get('code') or obj.get('pk')
-                    shared_url = obj.get('url') or (f"https://www.instagram.com/reel/{shared_code}/" if shared_code else None)
-                    shared_obj = obj
-                    break
+        shared_info = _shared_post_info(target_message)
+        shared_url = shared_info["url"] if shared_info else None
         if not shared_url:
             return {"success": False, "message": "This message does not contain a supported shared post/reel/clip"}
         # Download using Instagrapi
@@ -797,6 +853,9 @@ def download_shared_post_from_message(message_id: str, thread_id: str, download_
                 "file_path": file_path,
                 "media_type": media_type,
                 "shared_post_url": shared_url,
+                "caption": media.caption_text,
+                "author": media.user.username if media.user else None,
+                "video_duration": media.video_duration,
                 "message_id": message_id,
                 "thread_id": thread_id
             }
