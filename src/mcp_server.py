@@ -155,7 +155,9 @@ def list_chats(
         return {field: t.get(field) for field in fields}
 
     try:
-        threads = client.direct_threads(amount, selected_filter, thread_message_limit)
+        threads = client.direct_threads(
+            amount, selected_filter or None, thread_message_limit=thread_message_limit
+        )
         if full:
             return {"success": True, "threads": [t.dict() if hasattr(t, 'dict') else str(t) for t in threads]}
         elif fields:
@@ -886,7 +888,8 @@ if __name__ == "__main__":
        SESSION_FILE = Path(f"{username}_session.json")
        if SESSION_FILE.exists():
            logger.info(f"Loading existing session from {SESSION_FILE}")
-           client.load_settings(SESSION_FILE)
+           # Sessions saved by instagrapi 2.x keep its outdated app version unless overridden
+           client.load_settings(SESSION_FILE, override_app_version=True)
        
        client.login(username, password)
        
